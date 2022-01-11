@@ -1,81 +1,85 @@
 import * as vscode from 'vscode';
-import {latexSymbols} from './latex';
-import {LatexCompletionItemProvider} from './completion'
+import {LatexSymbol, latexSymbols} from './latex';
 
-const RE_LATEX_NAME = /(\\\S+)/g;
 
-let latexItems: vscode.QuickPickItem[] = [];
-let pickOptions: vscode.QuickPickOptions = {
-    matchOnDescription: true,
-};
 
 export function activate(context: vscode.ExtensionContext) {
+    const pickOptions: vscode.QuickPickOptions = { matchOnDescription: true };
+    const latexPickItems: vscode.QuickPickItem[] = loadPickItems();
 
-    latexItems = [];
-    for (let name in latexSymbols) {
-        latexItems.push({
-            description: name,
-            label: latexSymbols[name],
-        });
-    }
-
-    let insertion = vscode.commands.registerCommand('unicode-latex.insertMathSymbol', () => {
-        vscode.window.showQuickPick(latexItems, pickOptions).then(insertSymbol);
-    });
-    let replacement = vscode.commands.registerCommand('unicode-latex.replaceLatexNames', () => {
-        replaceWithUnicode(vscode.window.activeTextEditor);
+    let insertion = vscode.commands.registerCommand('unicode-math.insertMathSymbol', () => {
+        vscode.window.showQuickPick(latexPickItems, pickOptions).then(insertSymbol);
     });
 
-    const selector: vscode.DocumentSelector = ['plaintext', 'markdown', 'coq'];
-    const provider = new LatexCompletionItemProvider(latexSymbols);
-    let completionSub = vscode.languages.registerCompletionItemProvider(selector, provider, '\\');
+    const selector: vscode.DocumentSelector = [
+        'plaintext', 'markdown', 'coq', 'python', 'java', 'haskell', 
+        'sml', 'ocaml', 'rmd', 'r', 'tex', 'typescript', 'html', 'yaml', 'javascript',
+        'groovy', 'go', 'clojure', 'fsharp', 'asciidoc'
+    ];
+    const provider = new LatexCompletionItemProvider(',', latexSymbols);
+    const completionSub = vscode.languages.registerCompletionItemProvider(selector, provider, ',');
 
     context.subscriptions.push(insertion);
-    context.subscriptions.push(replacement);
     context.subscriptions.push(completionSub);
 }
 
-function insertSymbol(item: vscode.QuickPickItem) {
-    if (!item) { return; }
-    let editor = vscode.window.activeTextEditor;
-    if (!editor) { return; }
+function loadPickItems() : vscode.QuickPickItem[] {
+    const items: vscode.QuickPickItem[] = [];
 
-    editor.edit( (editBuilder) => {
-        editBuilder.delete(editor.selection);
-    }).then( () => {
-        editor.edit( (editBuilder) => {
-            editBuilder.insert(editor.selection.start, item.label);
-        });
-    });
+    for (const sym of latexSymbols) {
+        items.push({description: sym.latex, label: sym.unicode});
+    }
+
+    return items;
 }
 
-function replaceWithUnicode(editor: vscode.TextEditor) {
+function insertSymbol(item: vscode.QuickPickItem | undefined) {
+    const editor = vscode.window.activeTextEditor;
+
     if (!editor) { return; }
+    if (!item) { return; }
 
-    // If nothing is selected, select everything
-    let selection = (() => {
-        if (editor.selection.start.isBefore(editor.selection.end)) {
-            return editor.selection;
-        } else {
-            let endLine = editor.document.lineAt(editor.document.lineCount - 1);
-            return new vscode.Selection(
-                new vscode.Position(0, 0),
-                new vscode.Position(endLine.lineNumber, endLine.text.length)
-            );
+    editor.edit( (editBuilder) => { editBuilder.delete(editor.selection); })
+          .then( () => { editor.edit( (editBuilder) => {
+              editBuilder.insert(editor.selection.start, item.label); });
+            });
+}
+
+class LatexCompletionItemProvider implements vscode.CompletionItemProvider {
+
+    completionItems: vscode.CompletionItem[];
+    prefix: string;
+
+    public constructor(prefix: string, symbols: LatexSymbol[]) {
+        this.prefix = prefix;
+        this.completionItems = [];
+
+        for (const sym of symbols) {
+            const item = new vscode.CompletionItem(prefix + sym.latex, vscode.CompletionItemKind.Text);
+            item.insertText = sym.unicode;
+            item.detail = sym.unicode;
+            this.completionItems.push(item);
         }
-    })();
+    }
 
-    let text = editor.document.getText(selection);
-    let replacement = text.replace(RE_LATEX_NAME, (m: string) => {
-        if (latexSymbols.hasOwnProperty(m)) {
-            return latexSymbols[m];
+    public provideCompletionItems(doc: vscode.TextDocument, pos: vscode.Position)
+        : vscode.CompletionItem[]
+    {
+        // , /\/[\^_]?[^\s\\]*/
+        const range = doc.getWordRangeAtPosition(pos, /,[\^_]?[^\s\\]*/);
+        if (!range) {
+            return [];
         }
-        return m;
-    });
+        const word = range.with(undefined, pos);
+        if (!word) {
+            return [];
+        }
 
-    editor.edit((editBuilder) => {
-        editBuilder.replace(selection, replacement);
-    });
+        return this.completionItems.map((item) => {
+            item.range = word;
+            return item;
+        });
+    }
 }
 
 // this method is called when your extension is deactivated
