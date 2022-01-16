@@ -22,6 +22,8 @@ export const latexSymbols: LatexSymbol[] = [
     { latex: 'Lambda', unicode: 'Λ' },
     { latex: 'mu', unicode: 'μ' },
     { latex: 'nu', unicode: 'ν' },
+    { latex: 'Im', unicode: 'ℑ' },
+    { latex: 'Re', unicode: 'ℜ' },
     { latex: 'omega', unicode: 'ω' },
     { latex: 'Omega', unicode: 'Ω' },
     { latex: 'phi', unicode: 'ϕ' },
@@ -314,7 +316,6 @@ export const latexSymbols: LatexSymbol[] = [
     { latex: 'bbQ', unicode: 'ℚ' },
     { latex: 'bbr', unicode: '𝕣' },
     { latex: 'bbR', unicode: 'ℝ' },
-    { latex: 'bbrktbrk', unicode: '⎶' },
     { latex: 'bbs', unicode: '𝕤' },
     { latex: 'bbS', unicode: '𝕊' },
     { latex: 'bbsemi', unicode: '⨟' },
@@ -1042,9 +1043,6 @@ export const latexSymbols: LatexSymbol[] = [
     { latex: 'ttz', unicode: '𝚣' },
     { latex: 'ttZ', unicode: '𝚉' },
 
-    { latex: 'Im', unicode: 'ℑ' },
-    { latex: 'Re', unicode: 'ℜ' },
-
     { latex: 'bb0', unicode: '𝟘' },
     { latex: 'bb1', unicode: '𝟙' },
     { latex: 'bb2', unicode: '𝟚' },
@@ -1144,6 +1142,7 @@ export const latexSymbols: LatexSymbol[] = [
     { latex: 'barrightarrowdiamond', unicode: '⤠' },
     { latex: 'barvee', unicode: '⊽' },
     { latex: 'barwedge', unicode: '⊼' },
+    { latex: 'bbrktbrk', unicode: '⎶' },
     { latex: 'because', unicode: '∵' },
     { latex: 'benzenr', unicode: '⏣' },
     { latex: 'beth', unicode: 'ℶ' },
@@ -2506,6 +2505,4 @@ export const latexSymbols: LatexSymbol[] = [
     { latex: '^x', unicode: 'ˣ' },
     { latex: '^y', unicode: 'ʸ' },
     { latex: '^z', unicode: 'ᶻ' },
-    { latex: '1/', unicode: '⅟' },
-    { latex: '1/10', unicode: '⅒' },
 ];

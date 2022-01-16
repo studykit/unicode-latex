@@ -6,7 +6,28 @@ A visual studio code extension that allows the insertion of unicode symbols from
 
 ## Usage
 
-When editing a plaintext file, this extension provides autocompletions for latex symbols - inserting the equivalent unicode character for the selected completion. Completions are triggered on ','.
+When editing the following files, this extension provides autocompletions for latex symbols:
+- asciidoc
+- clojure
+- coq
+- fsharp
+- go
+- groovy
+- haskell
+- html
+- java
+- javascript
+- markdown
+- ocaml
+- plaintext
+- python
+- r
+- racket
+- rmd
+- sml
+- tex
+- typescript
+- yaml
 
 To insert a symbol, simply execute the `Unicode: Insert Math Symbol` command and type in the name of your desired symbol or select it from the drop-down list.
 

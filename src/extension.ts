@@ -12,12 +12,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const selector: vscode.DocumentSelector = [
-        'plaintext', 'markdown', 'coq', 'python', 'java', 'haskell', 
-        'sml', 'ocaml', 'rmd', 'r', 'tex', 'typescript', 'html', 'yaml', 'javascript',
-        'groovy', 'go', 'clojure', 'fsharp', 'asciidoc'
+        {pattern: '**/*'},
     ];
-    const provider = new LatexCompletionItemProvider(',', latexSymbols);
-    const completionSub = vscode.languages.registerCompletionItemProvider(selector, provider, ',');
+    const provider = new LatexCompletionItemProvider(latexSymbols);
+    const completionSub = vscode.languages.registerCompletionItemProvider(selector, provider);
 
     context.subscriptions.push(insertion);
     context.subscriptions.push(completionSub);
@@ -48,14 +46,12 @@ function insertSymbol(item: vscode.QuickPickItem | undefined) {
 class LatexCompletionItemProvider implements vscode.CompletionItemProvider {
 
     completionItems: vscode.CompletionItem[];
-    prefix: string;
 
-    public constructor(prefix: string, symbols: LatexSymbol[]) {
-        this.prefix = prefix;
+    public constructor(symbols: LatexSymbol[]) {
         this.completionItems = [];
 
         for (const sym of symbols) {
-            const item = new vscode.CompletionItem(prefix + sym.latex, vscode.CompletionItemKind.Text);
+            const item = new vscode.CompletionItem(sym.latex, vscode.CompletionItemKind.Text);
             item.insertText = sym.unicode;
             item.detail = sym.unicode;
             this.completionItems.push(item);
@@ -65,8 +61,7 @@ class LatexCompletionItemProvider implements vscode.CompletionItemProvider {
     public provideCompletionItems(doc: vscode.TextDocument, pos: vscode.Position)
         : vscode.CompletionItem[]
     {
-        // , /\/[\^_]?[^\s\\]*/
-        const range = doc.getWordRangeAtPosition(pos, /,[\^_]?[^\s\\]*/);
+        const range = doc.getWordRangeAtPosition(pos);
         if (!range) {
             return [];
         }
