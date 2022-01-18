@@ -1,3 +1,4 @@
+import { privateEncrypt } from 'crypto';
 import * as vscode from 'vscode';
 import {LatexSymbol, latexSymbols} from './latex';
 
@@ -15,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
         {pattern: '**/*'},
     ];
     const provider = new LatexCompletionItemProvider(latexSymbols);
-    const completionSub = vscode.languages.registerCompletionItemProvider(selector, provider);
+    const completionSub = vscode.languages.registerCompletionItemProvider(selector, provider, '^', '_');
 
     context.subscriptions.push(insertion);
     context.subscriptions.push(completionSub);
@@ -61,7 +62,11 @@ class LatexCompletionItemProvider implements vscode.CompletionItemProvider {
     public provideCompletionItems(doc: vscode.TextDocument, pos: vscode.Position)
         : vscode.CompletionItem[]
     {
-        const range = doc.getWordRangeAtPosition(pos);
+        let range = doc.getWordRangeAtPosition(pos, /[\^_][^\s]*/);
+        if (!range) {
+            range = doc.getWordRangeAtPosition(pos);    
+        }
+        
         if (!range) {
             return [];
         }

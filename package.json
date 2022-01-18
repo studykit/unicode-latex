@@ -2,7 +2,7 @@
   "name": "unicode-math",
   "displayName": "Unicode Math",
   "description": "Insert unicode symbols for latex names",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "publisher": "studykit",
   "author": {
     "name": "studykit"
