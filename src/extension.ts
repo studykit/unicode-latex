@@ -64,7 +64,7 @@ class LatexCompletionItemProvider implements vscode.CompletionItemProvider {
     {
         let range = doc.getWordRangeAtPosition(pos, /[\^_][^\s]*/);
         if (!range) {
-            range = doc.getWordRangeAtPosition(pos);    
+            range = doc.getWordRangeAtPosition(pos, /\w+/);
         }
         
         if (!range) {
